@@ -20,28 +20,73 @@ package org.robotlegs.utilities.modular.mvcs
 	   		
 		[Inject]
 		public var moduleCommandMap:IModuleCommandMap;
-	                                                                   
-	
-		// Helper functions for passing events between / around modules
-		protected function redispatchToModules(e:Event):void{
-			moduleDispatcher.dispatchEvent(e);
-		}
-	
-		protected function redispatchInternally(e:Event):void{
-			// you could equally use the dispatch(e) helper, but sometimes longhand offers clarity
-			eventDispatcher.dispatchEvent(e);
+
+        /**
+         * Map an event type to globally redispatch to all modules within an application.
+         * <p/>
+         * <listing version="3.0">
+         * mapRedispatchToModules(MyEvent.SOME_EVENT);
+         * </listing>
+         * 
+         * @param event
+         * 
+         */
+        protected function mapRedispatchToModules(eventType:String):void
+        {
+            eventMap.mapListener(eventDispatcher, eventType, redispatchToModules);
+        }
+        
+        /**
+         * Globally redispatch an event to all modules within an application.
+         * <p/>
+         * <listing version="3.0">
+         * eventMap.mapEvent(view, MyEvent.SOME_EVENT, redispatchToModule);
+         * </listing>
+         * 
+         * @param event
+         * 
+         */
+		protected function redispatchToModules(event:Event):void
+        {
+			moduleDispatcher.dispatchEvent(event);
 		}
 
-                // extra sugar to reduce boilerplate on the transfer of events
-                protected function mapRedispatchInternally(eventType:String):void{
-			eventMap.mapListener(moduleDispatcher, eventType, redispatchInternally);
+        /**
+         * Map an event type to locally redispatch to all modules within an application.
+         * This is equivelant to using the <code>dispatch</code> method.
+         * 
+         * <p/>
+         * @example The following example maps MyEvent.SOME_EVENT to redispatch to THIS module.
+         * <listing version="3.0">
+         * mapRedispatchInternally(MyEvent.SOME_EVENT);
+         * </listing>
+         * 
+         * @param event
+         * @see 
+         * 
+         */
+        protected function mapRedispatchInternally(eventType:String):void
+        {
+            eventMap.mapListener(moduleDispatcher, eventType, redispatchInternally);
+        }
+        
+        /**
+         * Locally redispatch an event to all modules within an application.
+         * This is equivelant to using the <code>dispatch</code> method.
+         * 
+         * <p/>
+         * @example The following example relays directly.
+         * <listing version="3.0">
+         * eventMap.mapEvent(view, MyEvent.SOME_EVENT, redispatchInternally);
+         * </listing>
+         * 
+         * @param event
+         * @see 
+         * 
+         */
+		protected function redispatchInternally(event:Event):void
+        {
+			eventDispatcher.dispatchEvent(event);
 		}
-		
-		protected function mapRedispatchToModules(eventType:String):void{
-			eventMap.mapListener(eventDispatcher, eventType, redispatchToModules);
-		}
-
-	
 	}
-	
 }

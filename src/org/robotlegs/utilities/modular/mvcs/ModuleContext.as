@@ -9,37 +9,39 @@ package org.robotlegs.utilities.modular.mvcs
 {
 	import flash.display.DisplayObjectContainer;
 	
+	import org.robotlegs.core.IInjector;
 	import org.robotlegs.mvcs.Context;
 	import org.robotlegs.utilities.modular.base.ModuleCommandMap;
+	import org.robotlegs.utilities.modular.base.ModuleEventDispatcher;
 	import org.robotlegs.utilities.modular.core.IModuleCommandMap;
 	import org.robotlegs.utilities.modular.core.IModuleContext;
 	import org.robotlegs.utilities.modular.core.IModuleEventDispatcher;
-	
-	public class ModuleContext extends Context implements IModuleContext
-	{
-		protected var _isModuleDispatcherSet:Boolean;
-		
-		public function ModuleContext(contextView:DisplayObjectContainer = null)
-		{
-			// autostartup doesn't make sense in this set up because you need to run setModuleDispatcher before startup();
-			super(contextView, false);
-		}
-		
-		override public function startup():void
-		{
-			if (!_isModuleDispatcherSet)
-			{
-				trace("DIAGNOSTIC HELPER: You need to set up the module dispatcher before you can run startup. If your app bails now... you'll know why.")
-			}
-			super.startup();
-		}
-		
-		public function setModuleDispatcher(dispatcher:IModuleEventDispatcher):void
-		{
-			injector.mapValue(IModuleEventDispatcher, dispatcher);
-			injector.mapValue(IModuleCommandMap, new ModuleCommandMap(dispatcher, injector, reflector));
-			
-			_isModuleDispatcherSet = true;
-		}
-	}
+
+    /**
+     * Contains additional mappings and facilitates the use of a parent injector
+     * to create a child injector for a module. 
+     * @author Joel Hooks
+     * 
+     */    
+    public class ModuleContext extends Context
+    {
+        public function ModuleContext(contextView:DisplayObjectContainer=null, autoStartup:Boolean=true, injector:IInjector = null)
+        {
+            if(injector)
+            {
+                injector = injector.createChild();
+                _injector = injector;
+            }
+            super(contextView, autoStartup);
+        }
+        
+        override protected function mapInjections():void
+        {
+            super.mapInjections();
+            if(!injector.hasMapping(IModuleEventDispatcher))
+                injector.mapSingletonOf(IModuleEventDispatcher, ModuleEventDispatcher);
+            if(!injector.hasMapping(IModuleCommandMap))
+                injector.mapSingletonOf(IModuleCommandMap, ModuleCommandMap);
+        }
+    }
 }
