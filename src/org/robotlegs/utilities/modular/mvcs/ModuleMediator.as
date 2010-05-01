@@ -31,9 +31,9 @@ package org.robotlegs.utilities.modular.mvcs
          * @param event
          * 
          */
-        protected function mapRedispatchToModules(eventType:String):void
+        protected function addModuleListener(type:String, listener:Function, eventClass:Class = null, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = true):void
         {
-            eventMap.mapListener(eventDispatcher, eventType, redispatchToModules);
+            eventMap.mapListener(moduleDispatcher, type, listener, eventClass, useCapture, priority, useWeakReference);
         }
         
         /**
@@ -46,47 +46,9 @@ package org.robotlegs.utilities.modular.mvcs
          * @param event
          * 
          */
-		protected function redispatchToModules(event:Event):void
+		protected function dispatchToModules(event:Event):void
         {
 			moduleDispatcher.dispatchEvent(event);
-		}
-
-        /**
-         * Map an event type to locally redispatch to all modules within an application.
-         * This is equivelant to using the <code>dispatch</code> method.
-         * 
-         * <p/>
-         * @example The following example maps MyEvent.SOME_EVENT to redispatch to THIS module.
-         * <listing version="3.0">
-         * mapRedispatchInternally(MyEvent.SOME_EVENT);
-         * </listing>
-         * 
-         * @param event
-         * @see 
-         * 
-         */
-        protected function mapRedispatchInternally(eventType:String):void
-        {
-            eventMap.mapListener(moduleDispatcher, eventType, redispatchInternally);
-        }
-        
-        /**
-         * Locally redispatch an event to all modules within an application.
-         * This is equivelant to using the <code>dispatch</code> method.
-         * 
-         * <p/>
-         * @example The following example relays directly.
-         * <listing version="3.0">
-         * eventMap.mapEvent(view, MyEvent.SOME_EVENT, redispatchInternally);
-         * </listing>
-         * 
-         * @param event
-         * @see 
-         * 
-         */
-		protected function redispatchInternally(event:Event):void
-        {
-			eventDispatcher.dispatchEvent(event);
 		}
 	}
 }

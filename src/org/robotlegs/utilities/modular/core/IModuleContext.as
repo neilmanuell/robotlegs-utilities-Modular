@@ -7,9 +7,10 @@
 
 package org.robotlegs.utilities.modular.core
 {
+    import org.robotlegs.core.IContext;
 	
-	public interface IModuleContext
+	public interface IModuleContext extends IContext
 	{
-		function setModuleDispatcher(dispatcher:IModuleEventDispatcher):void;
+        function dispose():void;
 	}
 }

@@ -6,6 +6,8 @@
  */
 package org.robotlegs.utilities.modular.base
 {
+	import flash.utils.Dictionary;
+	
 	import org.robotlegs.base.CommandMap;
 	import org.robotlegs.core.IInjector;
 	import org.robotlegs.core.IReflector;
@@ -24,5 +26,24 @@ package org.robotlegs.utilities.modular.base
 		{
 			super(eventDispatcher, injector, reflector);
 		}
+        
+        public function dispose():void
+        {
+            for(var key:Object in eventTypeMap);
+            {
+                for each(var value:Object in eventTypeMap[key])
+                {
+                    if(value is Dictionary)
+                    {
+                        for(var innerKey:Object in value)
+                        {
+                            eventDispatcher.removeEventListener(String(key), value[innerKey]);                            
+                            delete value[innerKey];                   
+                        }
+                    }
+                }
+                delete eventTypeMap[key];
+            }
+        }
 	}
 }

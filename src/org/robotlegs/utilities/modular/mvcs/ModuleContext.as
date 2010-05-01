@@ -8,7 +8,9 @@
 package org.robotlegs.utilities.modular.mvcs
 {
 	import flash.display.DisplayObjectContainer;
+	import flash.events.Event;
 	
+	import org.robotlegs.base.ContextEvent;
 	import org.robotlegs.core.IInjector;
 	import org.robotlegs.mvcs.Context;
 	import org.robotlegs.utilities.modular.base.ModuleCommandMap;
@@ -23,8 +25,32 @@ package org.robotlegs.utilities.modular.mvcs
      * @author Joel Hooks
      * 
      */    
-    public class ModuleContext extends Context
+    public class ModuleContext extends Context implements IModuleContext
     {
+        private var _moduleDispatcher:IModuleEventDispatcher;
+
+        public function get moduleDispatcher():IModuleEventDispatcher
+        {
+            return _moduleDispatcher;
+        }
+
+        public function set moduleDispatcher(value:IModuleEventDispatcher):void
+        {
+            _moduleDispatcher = value;
+        }
+        
+        private var _moduleCommandMap:IModuleCommandMap;
+
+        public function get moduleCommandMap():IModuleCommandMap
+        {
+            return _moduleCommandMap || (_moduleCommandMap = new ModuleCommandMap(moduleDispatcher, injector, reflector));
+        }
+        
+        public function set moduleCommandMap(value:IModuleCommandMap):void
+        {
+            _moduleCommandMap = value;
+        }
+        
         public function ModuleContext(contextView:DisplayObjectContainer=null, autoStartup:Boolean=true, injector:IInjector = null)
         {
             if(injector)
@@ -38,10 +64,42 @@ package org.robotlegs.utilities.modular.mvcs
         override protected function mapInjections():void
         {
             super.mapInjections();
-            if(!injector.hasMapping(IModuleEventDispatcher))
-                injector.mapSingletonOf(IModuleEventDispatcher, ModuleEventDispatcher);
-            if(!injector.hasMapping(IModuleCommandMap))
-                injector.mapSingletonOf(IModuleCommandMap, ModuleCommandMap);
+            initializeModuleEventDispatcher();
+            injector.mapValue(IModuleCommandMap, moduleCommandMap);
+        }
+        
+        protected function initializeModuleEventDispatcher():void
+        {
+            if(injector.hasMapping(IModuleEventDispatcher) )
+            {
+                moduleDispatcher = injector.getInstance(IModuleEventDispatcher);
+            }
+            else
+            {
+                moduleDispatcher = new ModuleEventDispatcher(this);
+                injector.mapValue(IModuleEventDispatcher, moduleDispatcher); 
+            }          
+        }
+        
+        
+        protected function dispatchToModules(event:Event):void
+        {
+            _moduleDispatcher.dispatchEvent(event);
+        }
+        
+        public function dispose():void
+        {
+            dispatchEvent(new ContextEvent(ContextEvent.SHUTDOWN));
+            _moduleCommandMap.dispose();
+            _moduleCommandMap = null;
+            _moduleDispatcher = null;
+            _contextView = null;
+            _injector = null;
+            _reflector = null;
+            _commandMap = null;
+            _mediatorMap = null;
+            _viewMap = null;
+            _eventDispatcher = null;
         }
     }
 }
