@@ -1,21 +1,26 @@
-.settings/*
-bin-debug/*
-bin-release/*
-html-template/*
-bin/*
-doc/*
+/.settings/*
+
+/html-template/*
+/bin-debug/*
+/bin-release/*
+/bin/*
+docs/*
 obj/*
 
-*/.svn/*
 .actionScriptProperties
 .flexProperties
 .flexLibProperties
 .FlexUnitSettings
 .project
 
+Icon
 Thumbs.db
 .DS_Store
-/.project
-/.flexLibProperties
-/.actionScriptProperties
-/.settings
+dist/*
+report/*
+doc/*
+
+src/FlexUnitApplication.mxml
+*.iml
+*.ipr
+*.iws
