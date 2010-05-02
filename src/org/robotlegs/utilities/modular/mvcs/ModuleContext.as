@@ -27,26 +27,26 @@ package org.robotlegs.utilities.modular.mvcs
      */    
     public class ModuleContext extends Context implements IModuleContext
     {
-        private var _moduleDispatcher:IModuleEventDispatcher;
+        protected var _moduleDispatcher:IModuleEventDispatcher;
 
-        public function get moduleDispatcher():IModuleEventDispatcher
+        protected function get moduleDispatcher():IModuleEventDispatcher
         {
             return _moduleDispatcher;
         }
 
-        public function set moduleDispatcher(value:IModuleEventDispatcher):void
+        protected function set moduleDispatcher(value:IModuleEventDispatcher):void
         {
             _moduleDispatcher = value;
         }
         
-        private var _moduleCommandMap:IModuleCommandMap;
+        protected var _moduleCommandMap:IModuleCommandMap;
 
-        public function get moduleCommandMap():IModuleCommandMap
+        protected function get moduleCommandMap():IModuleCommandMap
         {
             return _moduleCommandMap || (_moduleCommandMap = new ModuleCommandMap(moduleDispatcher, injector, reflector));
         }
         
-        public function set moduleCommandMap(value:IModuleCommandMap):void
+        protected function set moduleCommandMap(value:IModuleCommandMap):void
         {
             _moduleCommandMap = value;
         }

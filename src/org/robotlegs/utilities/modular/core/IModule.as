@@ -19,5 +19,12 @@ package org.robotlegs.utilities.modular.core
          * 
          */        
         function set parentInjector(value:IInjector):void;
+        
+        /**
+         * Modules need a method for cleanup and removal of the module from 
+         * memory to make them available for garbage collection. 
+         * 
+         */        
+        function dispose():void;
     }
 }

@@ -15,7 +15,8 @@ package org.robotlegs.utilities.modular.base
 	import org.robotlegs.utilities.modular.core.IModuleEventDispatcher;
 
     /**
-     * Create command mappings that are global across all modules.
+     * Create command mappings that can be triggered by events dispatched on the 
+     * shared <code>ModuleEventDispatcher</code>.
      *  
      * @author Joel Hooks
      * 
@@ -29,21 +30,8 @@ package org.robotlegs.utilities.modular.base
         
         public function dispose():void
         {
-            for(var key:Object in eventTypeMap);
-            {
-                for each(var value:Object in eventTypeMap[key])
-                {
-                    if(value is Dictionary)
-                    {
-                        for(var innerKey:Object in value)
-                        {
-                            eventDispatcher.removeEventListener(String(key), value[innerKey]);                            
-                            delete value[innerKey];                   
-                        }
-                    }
-                }
-                delete eventTypeMap[key];
-            }
+            unmapEvents();
+            eventTypeMap = null;
         }
 	}
 }
