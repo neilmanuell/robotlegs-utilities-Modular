@@ -90,7 +90,8 @@ package org.robotlegs.utilities.modular.mvcs
         public function dispose():void
         {
             dispatchEvent(new ContextEvent(ContextEvent.SHUTDOWN));
-            _moduleCommandMap.dispose();
+            _commandMap.unmapEvents();
+            _moduleCommandMap.unmapEvents();
             _moduleCommandMap = null;
             _moduleDispatcher = null;
             _contextView = null;

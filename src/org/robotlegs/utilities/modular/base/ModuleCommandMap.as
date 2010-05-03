@@ -27,11 +27,5 @@ package org.robotlegs.utilities.modular.base
 		{
 			super(eventDispatcher, injector, reflector);
 		}
-        
-        public function dispose():void
-        {
-            unmapEvents();
-            eventTypeMap = null;
-        }
 	}
 }

@@ -11,6 +11,5 @@ package org.robotlegs.utilities.modular.core
 	
 	public interface IModuleCommandMap extends ICommandMap
 	{
-	    function dispose():void;
 	}
 }
