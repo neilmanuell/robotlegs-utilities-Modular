@@ -47,7 +47,5 @@ package org.robotlegs.utilities.modular.mvcs
                return moduleEventDispatcher.dispatchEvent(event);
             return true;
         }
-        
-
     }
 }
