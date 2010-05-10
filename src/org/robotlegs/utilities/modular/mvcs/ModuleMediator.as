@@ -7,11 +7,11 @@
 
 package org.robotlegs.utilities.modular.mvcs
 {
-	import org.robotlegs.mvcs.Mediator;
-	import org.robotlegs.utilities.modular.core.IModuleEventDispatcher;
-	import org.robotlegs.utilities.modular.core.IModuleCommandMap;
-	
 	import flash.events.Event;
+	
+	import org.robotlegs.mvcs.Mediator;
+	import org.robotlegs.utilities.modular.core.IModuleCommandMap;
+	import org.robotlegs.utilities.modular.core.IModuleEventDispatcher;
 	
 	public class ModuleMediator extends Mediator
 	{
@@ -46,9 +46,11 @@ package org.robotlegs.utilities.modular.mvcs
          * @param event
          * 
          */
-		protected function dispatchToModules(event:Event):void
+		protected function dispatchToModules(event:Event):Boolean
         {
-			moduleDispatcher.dispatchEvent(event);
+            if(moduleDispatcher.hasEventListener(event.type))
+			    return moduleDispatcher.dispatchEvent(event);
+            return false;
 		}
 	}
 }

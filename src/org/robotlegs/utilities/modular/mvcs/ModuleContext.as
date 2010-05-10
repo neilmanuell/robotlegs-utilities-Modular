@@ -9,9 +9,15 @@ package org.robotlegs.utilities.modular.mvcs
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
+	import flash.system.ApplicationDomain;
 	
+	import org.robotlegs.adapters.SwiftSuspendersInjector;
+	import org.robotlegs.base.CommandMap;
 	import org.robotlegs.base.ContextEvent;
+	import org.robotlegs.base.MediatorMap;
+	import org.robotlegs.core.ICommandMap;
 	import org.robotlegs.core.IInjector;
+	import org.robotlegs.core.IMediatorMap;
 	import org.robotlegs.mvcs.Context;
 	import org.robotlegs.utilities.modular.base.ModuleCommandMap;
 	import org.robotlegs.utilities.modular.base.ModuleEventDispatcher;
@@ -27,6 +33,8 @@ package org.robotlegs.utilities.modular.mvcs
      */    
     public class ModuleContext extends Context implements IModuleContext
     {
+        protected var _applicationDomain:ApplicationDomain;
+        
         protected var _moduleDispatcher:IModuleEventDispatcher;
 
         protected function get moduleDispatcher():IModuleEventDispatcher
@@ -43,20 +51,36 @@ package org.robotlegs.utilities.modular.mvcs
 
         protected function get moduleCommandMap():IModuleCommandMap
         {
-            return _moduleCommandMap || (_moduleCommandMap = new ModuleCommandMap(moduleDispatcher, injector, reflector));
+            return _moduleCommandMap || (_moduleCommandMap = new ModuleCommandMap(moduleDispatcher, injector.createChild(_applicationDomain), reflector));
         }
         
         protected function set moduleCommandMap(value:IModuleCommandMap):void
         {
             _moduleCommandMap = value;
         }
-        
-        public function ModuleContext(contextView:DisplayObjectContainer=null, autoStartup:Boolean=true, injector:IInjector = null)
+  
+        /**
+         * The <code>ICommandMap</code> for this <code>IContext</code>
+         */
+        override protected function get commandMap():ICommandMap
         {
-            if(injector)
+            return _commandMap || (_commandMap = new CommandMap(eventDispatcher, injector.createChild(_applicationDomain), reflector));
+        }
+        
+        /**
+         * The <code>IMediatorMap</code> for this <code>IContext</code>
+         */
+        override protected function get mediatorMap():IMediatorMap
+        {
+            return _mediatorMap || (_mediatorMap = new MediatorMap(contextView, injector.createChild(_applicationDomain), reflector));
+        }
+        
+        public function ModuleContext(contextView:DisplayObjectContainer=null, autoStartup:Boolean=true, parentInjector:IInjector = null, applicationDomain:ApplicationDomain = null)
+        {
+            _applicationDomain = applicationDomain || ApplicationDomain.currentDomain;
+            if(parentInjector)
             {
-                injector = injector.createChild();
-                _injector = injector;
+                _injector = parentInjector.createChild(_applicationDomain);
             }
             super(contextView, autoStartup);
         }
@@ -81,10 +105,11 @@ package org.robotlegs.utilities.modular.mvcs
             }          
         }
         
-        
-        protected function dispatchToModules(event:Event):void
+        protected function dispatchToModules(event:Event):Boolean
         {
-            _moduleDispatcher.dispatchEvent(event);
+            if(moduleDispatcher.hasEventListener(event.type))
+                return moduleDispatcher.dispatchEvent(event);
+            return true;
         }
         
         public function dispose():void
@@ -101,6 +126,7 @@ package org.robotlegs.utilities.modular.mvcs
             _mediatorMap = null;
             _viewMap = null;
             _eventDispatcher = null;
+            _applicationDomain = null;
         }
     }
 }
