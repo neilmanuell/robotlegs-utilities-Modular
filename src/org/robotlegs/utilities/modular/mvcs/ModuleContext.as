@@ -66,7 +66,22 @@ package org.robotlegs.utilities.modular.mvcs
         {
             return _commandMap || (_commandMap = new CommandMap(eventDispatcher, injector.createChild(_applicationDomain), reflector));
         }
-        
+
+   		/**
+		 * @private
+		 */
+		override protected function set commandMap(value:ICommandMap):void
+		{
+			_commandMap = value;
+		}
+
+		/**
+		 * @private
+		 */
+		override protected function set mediatorMap(value:IMediatorMap):void
+		{
+			_mediatorMap = value;
+		}
         /**
          * The <code>IMediatorMap</code> for this <code>IContext</code>
          */
